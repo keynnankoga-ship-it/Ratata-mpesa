@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Ratata</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: #0a0a0a;
+      color: white;
+      font-family: Georgia, serif;
+    }
+
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 80px;
+      min-height: 100vh;
+    }
+
+    .left {
+      max-width: 50%;
+    }
+
+    h1 {
+      font-size: 60px;
+      line-height: 1.2;
+    }
+
+    .btn {
+      background: #ff7a2f;
+      padding: 15px 30px;
+      border: none;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .payment-box {
+      margin-top: 40px;
+      background: #1a1a1a;
+      padding: 30px;
+      border-radius: 10px;
+    }
+
+    input {
+      padding: 12px;
+      width: 100%;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: none;
+    }
+
+    img {
+      max-width: 450px;
+    }
+
+    @media(max-width: 900px){
+      .hero{
+        flex-direction: column;
+        text-align: center;
+      }
+      .left{
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="left">
+    <h1>Experience the<br>Power of Ratata</h1>
+    <p>Premium product events & exclusive access</p>
+
+    <div class="payment-box">
+      <h3>Pay via M-Pesa</h3>
+      <input type="text" id="phone" placeholder="Phone (2547XXXXXXXX)">
+      <input type="number" id="amount" placeholder="Amount">
+      <button class="btn" onclick="pay()">Pay Now</button>
+      <p id="response"></p>
+    </div>
+  </div>
+
+  <div class="right">
+    <img src="pasta.png">
+  </div>
+</section>
+
+<script>
+async function pay() {
+  const phone = document.getElementById("phone").value;
+  const amount = document.getElementById("amount").value;
+
+  const res = await fetch("http://localhost:5000/stkpush", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ phone, amount })
+  });
+
+  const data = await res.json();
+  document.getElementById("response").innerText =
+    "Check your phone to complete payment.";
+}
+</script>
+
+</body>
+</html>
