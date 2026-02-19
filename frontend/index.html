@@ -5,6 +5,41 @@
   <title>Ratata</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+
+    <script>
+async function payMpesa() {
+  const phone = document.getElementById("mpesa-phone").value.trim();
+  const amount = document.getElementById("mpesa-amount").value.trim();
+  const responseEl = document.getElementById("mpesa-response");
+
+  responseEl.innerText = "Processing payment...";
+
+  try {
+    const res = await fetch("http://localhost:5000/stkpush", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ phone, amount })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      const err = typeof data.error === "object"
+        ? JSON.stringify(data.error)
+        : data.error;
+      responseEl.innerText = "Error: " + err;
+    } else {
+      responseEl.innerText = "STK Push sent to your phone ✔";
+    }
+
+  } catch (err) {
+    responseEl.innerText = "Network error: " + err.message;
+  }
+}
+</script>
+
     body {
       margin: 0;
       background: #0a0a0a;
@@ -109,3 +144,4 @@ async function pay() {
 
 </body>
 </html>
+
