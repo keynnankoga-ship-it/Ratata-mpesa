@@ -73,6 +73,8 @@ body {
   color: white;
   font-weight: bold;
   border-radius: 5px;
+  border: none;
+  cursor: pointer;
   transition: 0.3s ease;
 }
 
@@ -84,22 +86,66 @@ body {
   max-width: 450px;
 }
 
-/* ABOUT */
-.about {
+/* GENERAL SECTION */
+.section {
   padding: 80px 60px;
   text-align: center;
+}
+
+.section.dark {
   background: #1a1a1a;
 }
 
-.about h2 {
-  font-size: 32px;
+.section h2 {
   margin-bottom: 20px;
+  font-size: 32px;
 }
 
-.about p {
-  max-width: 600px;
-  margin: auto;
-  color: #ccc;
+/* CONTACT */
+.contact-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.socials a {
+  display: block;
+  color: #ff7a2f;
+  margin: 8px 0;
+  text-decoration: none;
+}
+
+/* SUBSCRIBE */
+form {
+  margin-top: 20px;
+}
+
+input[type="email"] {
+  padding: 12px;
+  width: 250px;
+  border-radius: 5px;
+  border: none;
+  margin-right: 10px;
+}
+
+.message {
+  margin-top: 15px;
+  color: #ff7a2f;
+}
+
+/* MPESA */
+.mpesa-box {
+  background: #1a1a1a;
+  padding: 30px;
+  margin-top: 20px;
+  border-radius: 10px;
+}
+
+.small-note {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #aaa;
 }
 
 /* FOOTER */
@@ -129,5 +175,15 @@ footer {
   .navbar {
     flex-direction: column;
     gap: 15px;
+  }
+
+  .contact-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  input[type="email"] {
+    width: 100%;
+    margin-bottom: 10px;
   }
 }
