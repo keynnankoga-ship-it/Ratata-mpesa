@@ -1,10 +1,12 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Ratata Store</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+/* === GLOBAL === */
 body{
   margin:0;
   background:#0a0a0a;
@@ -12,17 +14,7 @@ body{
   font-family:Georgia,serif;
 }
 h1,h2,h3{margin:0 0 15px}
-
-/* HERO */
-.hero{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:80px;
-  min-height:80vh;
-}
-.left{max-width:50%}
-h1{font-size:60px}
+img{max-width:100%}
 .btn{
   background:#ff7a2f;
   padding:12px 25px;
@@ -32,9 +24,50 @@ h1{font-size:60px}
   cursor:pointer;
   border-radius:6px;
 }
-img{max-width:100%}
 
-/* PRODUCTS */
+/* === NAVIGATION === */
+nav{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:20px 50px;
+  background:#111;
+  position:sticky;
+  top:0;
+  z-index:1000;
+}
+nav h2{margin:0;color:#ff7a2f;}
+nav ul{
+  display:flex;
+  list-style:none;
+  margin:0;
+  padding:0;
+}
+nav ul li{
+  margin-left:25px;
+}
+nav ul li a{
+  color:white;
+  text-decoration:none;
+  font-weight:bold;
+  cursor:pointer;
+}
+nav ul li a:hover{
+  color:#ff7a2f;
+}
+
+/* === HERO === */
+.hero{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:80px;
+  min-height:80vh;
+}
+.left{max-width:50%}
+h1{font-size:60px}
+
+/* === PRODUCTS === */
 .products{
   padding:80px 8%;
   background:#111;
@@ -61,41 +94,37 @@ img{max-width:100%}
   margin:10px 0;
 }
 
-/* CART */
-.cart{
+/* === CART SECTION === */
+.cart-section{
+  display:none;
   padding:80px 8%;
+  background:#111;
 }
 .cart-item{
   display:flex;
   justify-content:space-between;
+  align-items:center;
   margin:10px 0;
+}
+.cart-item input{
+  width:50px;
+  margin-left:10px;
+  padding:5px;
+  border-radius:6px;
+  border:none;
 }
 .total{
   font-size:22px;
   margin-top:20px;
   color:#ff7a2f;
 }
-
-/* DELIVERY */
-.section-dark{
-  padding:80px 20px;
-  background:#111;
-  text-align:center;
-}
-form{
-  max-width:500px;
-  margin:auto;
-}
-form input,form textarea{
-  width:100%;
-  padding:12px;
-  margin:10px 0;
-  border:none;
-  border-radius:6px;
+.cart-buttons{
+  margin-top:20px;
 }
 
-/* PAYMENT */
+/* === PAYMENT SECTION === */
 .payment-section{
+  display:none;
   padding:80px 20px;
   background:#0a0a0a;
   text-align:center;
@@ -119,7 +148,7 @@ form input,form textarea{
   color:#ff7a2f;
 }
 
-/* GALLERY */
+/* === GALLERY === */
 .gallery{
   padding:80px 8%;
   text-align:center;
@@ -135,24 +164,49 @@ form input,form textarea{
   border-radius:12px;
 }
 
-/* CONTACT */
+/* === CONTACT === */
 .contact{
   padding:80px 20px;
   background:#111;
   text-align:center;
 }
 
+/* === FOOTER === */
+footer{
+  background:#111;
+  color:white;
+  text-align:center;
+  padding:20px;
+  font-size:14px;
+  margin-top:40px;
+}
+
+/* === MEDIA === */
 @media(max-width:900px){
   .hero{flex-direction:column;text-align:center}
   .left{max-width:100%}
+  nav ul{flex-direction:column}
+  nav ul li{margin:10px 0}
 }
 </style>
 </head>
 
 <body>
 
-<!-- HERO -->
-<section class="hero">
+<!-- NAVIGATION -->
+<nav>
+  <h2>Ratata</h2>
+  <ul>
+    <li><a onclick="scrollToHome()">Home</a></li>
+    <li><a onclick="scrollToProducts()">Menu</a></li>
+    <li><a onclick="scrollToContact()">Contact Us</a></li>
+    <li><a onclick="openCart()">Cart</a></li>
+    <li><a href="#" target="_blank">Social</a></li>
+  </ul>
+</nav>
+
+<!-- HERO / HOME -->
+<section id="home" class="hero">
   <div class="left">
     <h1>Experience the<br>Power of Ratata</h1>
     <p>One Drink, Three Souls</p>
@@ -189,66 +243,27 @@ form input,form textarea{
       <button class="btn" onclick="addToCart('Ratata Original 5Litres',3000)">Add to Cart</button>
     </div>
 
-<div class="card">
-      <img src="images/dessert.jpg">
-      <h3>Ratata Pineapple-Ginger 1Litre</h3>
-      <div class="price">KSh 800</div>
-      <button class="btn" onclick="addToCart('Ratata Pineapple-Ginger 1Litre',800)">Add to Cart</button>
-    </div>
-
-<div class="card">
-      <img src="images/dessert.jpg">
-      <h3>Ratata Pineapple-Ginger 2Litres</h3>
-      <div class="price">KSh 1450</div>
-      <button class="btn" onclick="addToCart('Ratata Pineapple-Ginger 2Litres',1450)">Add to Cart</button>
-    </div>
-
-<div class="card">
-      <img src="images/dessert.jpg">
-      <h3>Ratata Pineapple-Ginger 5Litres</h3>
-      <div class="price">KSh 3200</div>
-      <button class="btn" onclick="addToCart('Ratata Pineapple-Ginger 5Litres',3200)">Add to Cart</button>
-    </div>
-
-   </div>
+  </div>
 </section>
 
-
-
-<!-- CART -->
-<section class="cart">
+<!-- CART SECTION -->
+<section id="cart" class="cart-section">
   <h2>Your Cart</h2>
   <div id="cart-items"></div>
   <div class="total">Total: KSh <span id="cart-total">0</span></div>
-
-  <br>
-  <button class="btn" onclick="scrollToDelivery()">Checkout</button>
-  <br><br>
-
-  <a id="whatsapp-link" target="_blank">
-    <button class="btn">Order via WhatsApp</button>
-  </a>
+  <div class="cart-buttons">
+    <button class="btn" onclick="openPayment()">Checkout</button>
+  </div>
 </section>
 
-<!-- DELIVERY -->
-<section id="delivery" class="section-dark">
-  <h2>Delivery Details</h2>
-  <form id="delivery-form">
-    <input type="text" id="cust-name" placeholder="Full Name" required>
-    <input type="email" id="cust-email" placeholder="Email" required>
-    <input type="text" id="cust-phone" placeholder="Phone 2547XXXXXXXX" required>
-    <textarea id="cust-address" placeholder="Delivery Address" required></textarea>
-  </form>
-</section>
-
-<!-- MPESA -->
+<!-- PAYMENT SECTION -->
 <section id="payment" class="payment-section">
   <div class="payment-card">
-    <h2>M-Pesa Checkout</h2>
-    <p>Enter phone to pay</p>
-
+    <h2>Payment</h2>
+    <p>Total: KSh <span id="payment-total">0</span></p>
     <input type="text" id="mpesa-phone" placeholder="2547XXXXXXXX">
-    <button class="btn" onclick="payMpesa()">Pay Now</button>
+    <button class="btn" onclick="payMpesa()">Pay with M-Pesa</button>
+    <button class="btn" onclick="payCard()">Pay with Card (Visa)</button>
     <p id="mpesa-response"></p>
   </div>
 </section>
@@ -264,7 +279,7 @@ form input,form textarea{
 </section>
 
 <!-- CONTACT -->
-<section class="contact">
+<section id="contact" class="contact">
   <h2>Contact</h2>
   <form action="https://formspree.io/f/FORM_ID" method="POST">
     <input type="text" name="name" placeholder="Name">
@@ -274,91 +289,77 @@ form input,form textarea{
   </form>
 </section>
 
+<!-- FOOTER -->
+<footer>
+  &copy; 2026 Ratata Store. All rights reserved.
+</footer>
+
 <script>
 let cart=[];
 let total=0;
 
-function scrollToProducts(){
-  document.getElementById("products").scrollIntoView({behavior:"smooth"});
-}
-function scrollToDelivery(){
-  document.getElementById("delivery").scrollIntoView({behavior:"smooth"});
-}
+// NAVIGATION SCROLL
+function scrollToHome(){document.getElementById("home").scrollIntoView({behavior:"smooth"})}
+function scrollToProducts(){document.getElementById("products").scrollIntoView({behavior:"smooth"})}
+function scrollToContact(){document.getElementById("contact").scrollIntoView({behavior:"smooth"})}
 
+// CART FUNCTIONS
 function addToCart(name,price){
-  cart.push({name,price});
-  total+=price;
+  let existing=cart.find(i=>i.name===name);
+  if(existing){ existing.qty++; existing.priceTotal=existing.qty*price; }
+  else{ cart.push({name,price,qty:1,priceTotal:price}); }
   updateCart();
 }
-
 function updateCart(){
   const cartDiv=document.getElementById("cart-items");
   cartDiv.innerHTML="";
-
-  cart.forEach(item=>{
+  total=0;
+  cart.forEach((item,index)=>{
+    total+=item.priceTotal;
     const div=document.createElement("div");
     div.className="cart-item";
-    div.innerHTML=`<span>${item.name}</span><span>KSh ${item.price}</span>`;
+    div.innerHTML=`<span>${item.name}</span>
+      <span>KSh ${item.price} x <input type="number" value="${item.qty}" min="1" onchange="changeQty(${index},this.value)"> = KSh ${item.priceTotal}</span>`;
     cartDiv.appendChild(div);
   });
-
   document.getElementById("cart-total").innerText=total;
-
-  let msg="Hello Ratata, I want to order:%0A";
-  cart.forEach(i=>msg+=`${i.name} - KSh ${i.price}%0A`);
-  msg+=`Total: KSh ${total}`;
-
-  document.getElementById("whatsapp-link").href=
-    "https://wa.me/2547XXXXXXXX?text="+msg;
+  document.getElementById("payment-total").innerText=total;
+}
+function changeQty(index,val){
+  val=parseInt(val);
+  if(val<1) val=1;
+  cart[index].qty=val;
+  cart[index].priceTotal=cart[index].price*val;
+  updateCart();
+}
+function openCart(){
+  document.getElementById("cart").style.display="block";
+  document.getElementById("cart").scrollIntoView({behavior:"smooth"});
+}
+function openPayment(){
+  document.getElementById("payment").style.display="block";
+  document.getElementById("payment").scrollIntoView({behavior:"smooth"});
 }
 
+// PAYMENT
 async function payMpesa(){
   const phone=document.getElementById("mpesa-phone").value.trim();
-  const name=document.getElementById("cust-name").value;
-  const email=document.getElementById("cust-email").value;
-  const address=document.getElementById("cust-address").value;
   const response=document.getElementById("mpesa-response");
-
-  if(!phone||total<=0||!name||!email||!address){
-    response.innerText="Fill delivery & cart";
-    return;
-  }
-
+  if(!phone||total<=0){ response.innerText="Fill cart & phone"; return; }
   response.innerText="Processing payment...";
-
   try{
     const mpesaRes=await fetch("http://localhost:5000/stkpush",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({phone,amount:total})
     });
-
-    const mpesaData=await mpesaRes.json();
-
-    if(!mpesaRes.ok){
-      response.innerText="MPesa error";
-      return;
-    }
-
-    await fetch("http://localhost:5000/order",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        name,
-        email,
-        phone,
-        address,
-        total,
-        items:cart
-      })
-    });
-
-    response.innerText="Payment sent ✔ Receipt emailed";
-
+    const data=await mpesaRes.json();
+    response.innerText="Payment sent ✔";
   }catch(err){
     response.innerText="Network error";
   }
 }
+function payCard(){ alert("Card payment not implemented yet."); }
 </script>
 
 </body>
