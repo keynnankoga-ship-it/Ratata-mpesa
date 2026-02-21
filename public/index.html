@@ -350,55 +350,60 @@ footer{
   </div>
 </section>
 
- <!-- CONTACT SECTION -->
-<section id="contact" class="contact-section">
+<!-- CONTACT SECTION -->
+<section id="contact" class="contact-section" style="padding: 80px 20px; background:#111; text-align:center; color:white;">
+  <h2 style="font-family: Georgia, serif; font-weight: bold; margin-bottom: 10px;">CONTACT ME</h2>
+  <p style="margin-bottom: 40px; font-style: italic;">Let’s collaborate, consult, or build something meaningful together.</p>
 
-  <h2>CONTACT ME</h2>
-  <p>Contact Us</p>
-
-  <form id="contactForm" action="https://formspree.io/f/mzdardwe" method="POST">
+  <form id="contactForm" action="https://formspree.io/f/mzdardwe" method="POST" style="max-width: 500px; margin: 0 auto; text-align: left;">
     
-    <div>
-      <label>Full Name *</label>
-      <input type="text" name="name" required>
-      <div class="error-message"></div>
-    </div>
+    <label for="name" style="display:block; margin-bottom: 8px; font-weight: bold;">Full Name *</label>
+    <input type="text" id="name" name="name" required
+      style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #ccc; background: #faf9f7; margin-bottom: 20px; font-family: Georgia, serif; font-size: 16px;"/>
 
-    <div>
-      <label>Email *</label>
-      <input type="email" name="email" required>
-      <div class="error-message"></div>
-    </div>
+    <label for="email" style="display:block; margin-bottom: 8px; font-weight: bold;">Email *</label>
+    <input type="email" id="email" name="email" required
+      style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #ccc; background: #faf9f7; margin-bottom: 20px; font-family: Georgia, serif; font-size: 16px;"/>
 
-    <div class="full-width">
-      <label>Message *</label>
-      <textarea name="message" rows="5" required></textarea>
-      <div class="error-message"></div>
-    </div>
+    <label for="message" style="display:block; margin-bottom: 8px; font-weight: bold;">Message *</label>
+    <textarea id="message" name="message" rows="6" required
+      style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #ccc; background: #faf9f7; margin-bottom: 30px; font-family: Georgia, serif; font-size: 16px; resize: vertical;"></textarea>
 
-    <button type="submit">Send Message</button>
+    <button type="submit" style="
+      background: linear-gradient(90deg, #ff7a2f, #ff7a2f);
+      color: white;
+      font-weight: bold;
+      border: none;
+      padding: 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 18px;
+      transition: background 0.3s ease;
+    " onmouseover="this.style.background='#e06722'" onmouseout="this.style.background='#ff7a2f'">
+      Send Message
+    </button>
   </form>
 
   <!-- Social Links -->
-  <div class="social-section">
-    <h3>Or find me here</h3>
+  <div class="social-section" style="margin-top: 40px; text-align: center; color: white; font-family: Georgia, serif;">
+    <h3 style="font-weight: bold; margin-bottom: 20px;">Or find me here</h3>
 
-    <div class="social-links">
-      <a href="https://instagram.com/ratata.ke" target="_blank">
-        <i class="fab fa-instagram"></i> @ratata.ke
+    <div class="social-links" style="display: inline-flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+      <a href="https://instagram.com/ratata.ke" target="_blank" style="color:#ff7a2f; text-decoration:none; font-weight:bold;">
+        Instagram @ratata.ke
       </a>
 
-      <a href="https://twitter.com/ratata_ke" target="_blank">
-        <i class="fab fa-x-twitter"></i> @ratata_ke
+      <a href="https://twitter.com/ratata_ke" target="_blank" style="color:#ff7a2f; text-decoration:none; font-weight:bold;">
+        Twitter @ratata_ke
       </a>
 
-      <a href="mailto:keynnankoga@gmail.com">
-        <i class="fas fa-envelope"></i> keynnankoga@gmail.com
+      <a href="mailto:keynnankoga@gmail.com" style="color:#ff7a2f; text-decoration:none; font-weight:bold;">
+        Email keynnankoga@gmail.com
       </a>
     </div>
   </div>
-
-</section>
+</section>  
 
 <!-- FOOTER -->
 <footer>
