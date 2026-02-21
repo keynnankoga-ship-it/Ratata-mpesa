@@ -347,18 +347,38 @@ footer{
   </div>
 </section>
 
-<!-- CONTACT -->
-<section id="contact" class="contact">
-  <h2>Contact</h2>
-  <form action="https://formspree.io/f/mzdardwe" method="POST">
-    <input type="text" name="name" placeholder="Name" required>
-    <input type="email" name="email" placeholder="Email" required>
-    <textarea name="message" placeholder="Message" required></textarea>
-    <button class="btn" type="submit">Send Message</button>
+ <!-- CONTACT SECTION -->
+<section id="contact" class="contact-section">
+
+  <h2>CONTACT ME</h2>
+  <p>Contact Us</p>
+
+  <form id="contactForm" action="https://formspree.io/f/mzdardwe" method="POST">
+    
+    <div>
+      <label>Full Name *</label>
+      <input type="text" name="name" required>
+      <div class="error-message"></div>
+    </div>
+
+    <div>
+      <label>Email *</label>
+      <input type="email" name="email" required>
+      <div class="error-message"></div>
+    </div>
+
+    <div class="full-width">
+      <label>Message *</label>
+      <textarea name="message" rows="5" required></textarea>
+      <div class="error-message"></div>
+    </div>
+
+    <button type="submit">Send Message</button>
   </form>
-   <!-- Social Links -->
+
+  <!-- Social Links -->
   <div class="social-section">
-    <h3>Or find us here</h3>
+    <h3>Or find me here</h3>
 
     <div class="social-links">
       <a href="https://instagram.com/ratata.ke" target="_blank">
