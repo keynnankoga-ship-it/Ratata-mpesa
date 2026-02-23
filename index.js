@@ -1,15 +1,34 @@
-// index.js
+// 1️⃣ Import dependencies
 const express = require("express");
 const cors = require("cors");
 const Stripe = require("stripe");
+const axios = require("axios");
+const mongoose = require("mongoose");
 require("dotenv").config();
 
+// 2️⃣ Initialize Express app
 const app = express();
 
-// Middleware
+// 3️⃣ Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public")); // Serve frontend files from public/
+
+// 4️⃣ Connect to MongoDB
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log("✅ MongoDB Connected Successfully"))
+    .catch((err) => console.log("❌ MongoDB Connection Error:", err));
+
+// 5️⃣ Test DB route (optional)
+app.get("/test-db", async (req, res) => {
+    try {
+        const collections = await mongoose.connection.db.listCollections().toArray();
+        res.send(collections);
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
 
 // ===== STRIPE CARD PAYMENT =====
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY); // Stripe secret key
@@ -30,9 +49,6 @@ app.post("/create-payment-intent", async (req, res) => {
 });
 
 // ===== M-PESA STK PUSH =====
-const axios = require("axios");
-
-// Generate MPESA Token
 async function getMpesaToken() {
   const auth = Buffer.from(
     process.env.MPESA_CONSUMER_KEY + ":" + process.env.MPESA_CONSUMER_SECRET
