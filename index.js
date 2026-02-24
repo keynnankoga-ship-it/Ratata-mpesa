@@ -1,76 +1,109 @@
-// 1️⃣ Import dependencies
+// ================================
+// 1️⃣ IMPORT DEPENDENCIES
+// ================================
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const Stripe = require("stripe");
 const axios = require("axios");
 const mongoose = require("mongoose");
-require("dotenv").config();
+const path = require("path");
 
-// 2️⃣ Initialize Express app
+// ================================
+// 2️⃣ INITIALIZE APP
+// ================================
 const app = express();
 
-// 3️⃣ Middleware
+// ================================
+// 3️⃣ MIDDLEWARE
+// ================================
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public")); // Serve frontend files from public/
+app.use(express.static(path.join(__dirname, "public"))); // serve frontend
 
-// 4️⃣ Connect to MongoDB
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("✅ MongoDB Connected Successfully"))
-    .catch((err) => console.log("❌ MongoDB Connection Error:", err));
+// ================================
+// 4️⃣ CONNECT TO MONGODB
+// ================================
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB Connected Successfully"))
+  .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
-// 5️⃣ Test DB route (optional)
+// ================================
+// 5️⃣ TEST DB ROUTE
+// ================================
 app.get("/test-db", async (req, res) => {
-    try {
-        const collections = await mongoose.connection.db.listCollections().toArray();
-        res.send(collections);
-    } catch (err) {
-        res.status(500).send(err.message);
-    }
-});
-
-// ===== STRIPE CARD PAYMENT =====
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY); // Stripe secret key
-
-app.post("/create-payment-intent", async (req, res) => {
-  const { amount } = req.body;
   try {
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: amount * 100, // amount in KES cents
-      currency: "kes",
-      payment_method_types: ["card"],
-    });
-    res.json({ clientSecret: paymentIntent.client_secret });
+    const collections = await mongoose.connection.db
+      .listCollections()
+      .toArray();
+    res.json(collections);
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
 
-// ===== M-PESA STK PUSH =====
+// ================================
+// 6️⃣ STRIPE PAYMENT
+// ================================
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+
+app.post("/create-payment-intent", async (req, res) => {
+  const { amount } = req.body;
+
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amount * 100, // convert KES → cents
+      currency: "kes",
+      payment_method_types: ["card"],
+    });
+
+    res.json({ clientSecret: paymentIntent.client_secret });
+  } catch (err) {
+    console.error("Stripe Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ================================
+// 7️⃣ M-PESA TOKEN
+// ================================
 async function getMpesaToken() {
   const auth = Buffer.from(
-    process.env.MPESA_CONSUMER_KEY + ":" + process.env.MPESA_CONSUMER_SECRET
+    process.env.MPESA_CONSUMER_KEY +
+      ":" +
+      process.env.MPESA_CONSUMER_SECRET
   ).toString("base64");
 
   const response = await axios.get(
     "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
-    { headers: { Authorization: `Basic ${auth}` } }
+    {
+      headers: { Authorization: `Basic ${auth}` },
+    }
   );
 
   return response.data.access_token;
 }
 
+// ================================
+// 8️⃣ M-PESA STK PUSH
+// ================================
 app.post("/stkpush", async (req, res) => {
   const { phone, amount } = req.body;
 
   try {
     const token = await getMpesaToken();
 
-    const timestamp = new Date().toISOString().replace(/[-:TZ.]/g, "").slice(0, 14);
+    const timestamp = new Date()
+      .toISOString()
+      .replace(/[-:TZ.]/g, "")
+      .slice(0, 14);
+
     const password = Buffer.from(
-      process.env.MPESA_SHORTCODE + process.env.MPESA_PASSKEY + timestamp
+      process.env.MPESA_SHORTCODE +
+        process.env.MPESA_PASSKEY +
+        timestamp
     ).toString("base64");
 
     const response = await axios.post(
@@ -88,25 +121,47 @@ app.post("/stkpush", async (req, res) => {
         AccountReference: "Ratata",
         TransactionDesc: "Payment",
       },
-      { headers: { Authorization: `Bearer ${token}` } }
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
     );
 
-    console.log("MPESA RESPONSE:", response.data);
+    console.log("✅ MPESA RESPONSE:", response.data);
     res.json(response.data);
   } catch (err) {
-    console.error("MPESA ERROR:", err.response?.data || err.message);
+    console.error("❌ MPESA ERROR:", err.response?.data || err.message);
     res.status(500).json({ error: "STK Push failed" });
   }
 });
 
-// ===== ORDER LOGGING =====
-app.post("/order", (req, res) => {
-  const order = req.body;
-  console.log("Order received:", order);
-  // Optionally store in DB
-  res.json({ message: "Order saved successfully" });
+// ================================
+// 9️⃣ ORDER ROUTE (DB READY)
+// ================================
+app.post("/order", async (req, res) => {
+  try {
+    const order = req.body;
+    console.log("🧾 Order received:", order);
+
+    // 👉 next step: save to MongoDB
+
+    res.json({ message: "Order received successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// ===== START SERVER =====
+// ================================
+// 🔟 SERVE FRONTEND (RENDER SAFE)
+// ================================
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+// ================================
+// 1️⃣1️⃣ START SERVER
+// ================================
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Ratata backend running on port ${PORT}`));
+
+app.listen(PORT, () =>
+  console.log(`🚀 Ratata backend running on port ${PORT}`)
+);
