@@ -23,12 +23,40 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public"))); // serve frontend
 
 // ================================
-// 4️⃣ CONNECT TO MONGODB
+// 4️⃣ CONNECT TO MONGODB (WINDOWS-SAFE NON-SRV)
 // ================================
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB Connected Successfully"))
-  .catch((err) => console.error("❌ MongoDB Connection Error:", err));
+async function connectDB() {
+  try {
+    const mongoURI = process.env.MONGO_URI; 
+    // Example non-SRV URI format:
+    // mongodb://USERNAME:PASSWORD@ratatake-shard-00-00.6cjip3d.mongodb.net:27017,
+    // ratatake-shard-00-01.6cjip3d.mongodb.net:27017,
+    // ratatake-shard-00-02.6cjip3d.mongodb.net:27017/RatataKe?ssl=true&replicaSet=atlas-xxxx-shard-0&authSource=admin&retryWrites=true&w=majority
+
+    await mongoose.connect(mongoURI, {
+      connectTimeoutMS: 10000, // optional 10s timeout
+    });
+    console.log("✅ MongoDB Connected Successfully");
+  } catch (err) {
+    console.error("❌ MongoDB Connection Error:");
+    console.error(err.message);
+
+    if (err instanceof mongoose.Error.MongooseServerSelectionError) {
+      console.error(
+        "⚠️ Could not reach Atlas. Check:\n" +
+        "1. Your network allows outbound MongoDB connections (port 27017)\n" +
+        "2. Your IP is whitelisted in Atlas\n" +
+        "3. The username, password, and DB name in .env are correct\n" +
+        "4. If using a VPN, try disconnecting it"
+      );
+    }
+
+    process.exit(1);
+  }
+}
+
+// immediately connect
+connectDB();
 
 // ================================
 // 5️⃣ TEST DB ROUTE
