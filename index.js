@@ -10,6 +10,8 @@ const axios = require("axios");
 const mongoose = require("mongoose");
 const path = require("path");
 
+const User = require("./models/User"); // MongoDB model
+
 // ================================
 // 2️⃣ INITIALIZE APP
 // ================================
@@ -23,20 +25,18 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public"))); // serve frontend
 
 // ================================
-// 4️⃣ CONNECT TO MONGODB (WINDOWS-SAFE NON-SRV)
+// 4️⃣ CONNECT TO MONGODB
 // ================================
 async function connectDB() {
   try {
-    const mongoURI = process.env.MONGO_URI; 
-    // Example non-SRV URI format:
-    // mongodb://USERNAME:PASSWORD@ratatake-shard-00-00.6cjip3d.mongodb.net:27017,
-    // ratatake-shard-00-01.6cjip3d.mongodb.net:27017,
-    // ratatake-shard-00-02.6cjip3d.mongodb.net:27017/RatataKe?ssl=true&replicaSet=atlas-xxxx-shard-0&authSource=admin&retryWrites=true&w=majority
+    const mongoURI = process.env.MONGO_URI;
 
     await mongoose.connect(mongoURI, {
-      connectTimeoutMS: 10000, // optional 10s timeout
+      connectTimeoutMS: 10000,
     });
+
     console.log("✅ MongoDB Connected Successfully");
+
   } catch (err) {
     console.error("❌ MongoDB Connection Error:");
     console.error(err.message);
@@ -44,10 +44,9 @@ async function connectDB() {
     if (err instanceof mongoose.Error.MongooseServerSelectionError) {
       console.error(
         "⚠️ Could not reach Atlas. Check:\n" +
-        "1. Your network allows outbound MongoDB connections (port 27017)\n" +
-        "2. Your IP is whitelisted in Atlas\n" +
-        "3. The username, password, and DB name in .env are correct\n" +
-        "4. If using a VPN, try disconnecting it"
+        "1. Your IP is whitelisted in Atlas\n" +
+        "2. Your username/password is correct\n" +
+        "3. Your database name is correct\n"
       );
     }
 
@@ -55,17 +54,17 @@ async function connectDB() {
   }
 }
 
-// immediately connect
 connectDB();
 
 // ================================
-// 5️⃣ TEST DB ROUTE
+// 5️⃣ TEST DATABASE CONNECTION
 // ================================
 app.get("/test-db", async (req, res) => {
   try {
     const collections = await mongoose.connection.db
       .listCollections()
       .toArray();
+
     res.json(collections);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -73,54 +72,98 @@ app.get("/test-db", async (req, res) => {
 });
 
 // ================================
-// 6️⃣ STRIPE PAYMENT
+// 6️⃣ SAVE USER
 // ================================
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
-
-app.post("/create-payment-intent", async (req, res) => {
-  const { amount } = req.body;
-
+app.post("/api/users", async (req, res) => {
   try {
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: amount * 100, // convert KES → cents
-      currency: "kes",
-      payment_method_types: ["card"],
+
+    const user = new User(req.body);
+
+    await user.save();
+
+    console.log("✅ User saved:", user);
+
+    res.json({
+      message: "User saved successfully",
+      user
     });
 
-    res.json({ clientSecret: paymentIntent.client_secret });
   } catch (err) {
-    console.error("Stripe Error:", err);
-    res.status(500).json({ error: err.message });
+
+    console.error("❌ User save error:", err);
+
+    res.status(500).json({
+      error: err.message
+    });
+
   }
 });
 
 // ================================
-// 7️⃣ M-PESA TOKEN
+// 7️⃣ STRIPE PAYMENT
+// ================================
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+
+app.post("/create-payment-intent", async (req, res) => {
+
+  const { amount } = req.body;
+
+  try {
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amount * 100,
+      currency: "kes",
+      payment_method_types: ["card"],
+    });
+
+    res.json({
+      clientSecret: paymentIntent.client_secret
+    });
+
+  } catch (err) {
+
+    console.error("Stripe Error:", err);
+
+    res.status(500).json({
+      error: err.message
+    });
+
+  }
+});
+
+// ================================
+// 8️⃣ M-PESA TOKEN
 // ================================
 async function getMpesaToken() {
+
   const auth = Buffer.from(
     process.env.MPESA_CONSUMER_KEY +
-      ":" +
-      process.env.MPESA_CONSUMER_SECRET
+    ":" +
+    process.env.MPESA_CONSUMER_SECRET
   ).toString("base64");
 
   const response = await axios.get(
     "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
     {
-      headers: { Authorization: `Basic ${auth}` },
+      headers: {
+        Authorization: `Basic ${auth}`
+      },
     }
   );
 
   return response.data.access_token;
+
 }
 
 // ================================
-// 8️⃣ M-PESA STK PUSH
+// 9️⃣ M-PESA STK PUSH
 // ================================
 app.post("/stkpush", async (req, res) => {
+
   const { phone, amount } = req.body;
 
   try {
+
     const token = await getMpesaToken();
 
     const timestamp = new Date()
@@ -130,8 +173,8 @@ app.post("/stkpush", async (req, res) => {
 
     const password = Buffer.from(
       process.env.MPESA_SHORTCODE +
-        process.env.MPESA_PASSKEY +
-        timestamp
+      process.env.MPESA_PASSKEY +
+      timestamp
     ).toString("base64");
 
     const response = await axios.post(
@@ -150,46 +193,81 @@ app.post("/stkpush", async (req, res) => {
         TransactionDesc: "Payment",
       },
       {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
       }
     );
 
     console.log("✅ MPESA RESPONSE:", response.data);
+
     res.json(response.data);
+
   } catch (err) {
+
     console.error("❌ MPESA ERROR:", err.response?.data || err.message);
-    res.status(500).json({ error: "STK Push failed" });
+
+    res.status(500).json({
+      error: "STK Push failed"
+    });
+
   }
 });
 
 // ================================
-// 9️⃣ ORDER ROUTE (DB READY)
+// 🔟 ORDER ROUTE (SAVE TO DB)
 // ================================
 app.post("/order", async (req, res) => {
+
   try {
-    const order = req.body;
-    console.log("🧾 Order received:", order);
 
-    // 👉 next step: save to MongoDB
+    const orderData = req.body;
 
-    res.json({ message: "Order received successfully" });
+    const order = new User({
+      name: orderData.name,
+      email: orderData.email,
+      phone: orderData.phone
+    });
+
+    await order.save();
+
+    console.log("🧾 Order saved:", order);
+
+    res.json({
+      message: "Order saved successfully",
+      order
+    });
+
   } catch (err) {
-    res.status(500).json({ error: err.message });
+
+    console.error("❌ Order save error:", err);
+
+    res.status(500).json({
+      error: err.message
+    });
+
   }
+
 });
 
 // ================================
-// 🔟 SERVE FRONTEND (RENDER SAFE)
+// 1️⃣1️⃣ SERVE FRONTEND (RENDER SAFE)
 // ================================
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+
+  res.sendFile(
+    path.join(__dirname, "public", "index.html")
+  );
+
 });
 
 // ================================
-// 1️⃣1️⃣ START SERVER
+// 1️⃣2️⃣ START SERVER
 // ================================
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () =>
-  console.log(`🚀 Ratata backend running on port ${PORT}`)
-);
+app.listen(PORT, () => {
+
+  console.log(`🚀 Ratata backend running on port ${PORT}`);
+
+});
