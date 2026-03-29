@@ -10,7 +10,7 @@ const axios = require("axios");
 const mongoose = require("mongoose");
 const path = require("path");
 
-const User = require("./models/User"); // MongoDB model
+const User = require("./models/user"); // MongoDB model
 
 // ================================
 // 2️⃣ INITIALIZE APP
